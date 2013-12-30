@@ -10,17 +10,56 @@ and open the template in the editor.
         <title></title>
     </head>
     <body>
-        <?php
-        // put your code here
-        echo '<p>HOLA COMUNIDAD USAC</p>';
-        ?>
-        <!-- CSS PARA EL FORM LOGIN     -->
+        <!--    PHP PARA EL LOGIN        -->
+        
+        <?php 
+session_start(); 
+include_once "conexion.php"; 
+  
+function verificar_login($user,$password,&$result) { 
+    $sql = "SELECT * FROM usuarios WHERE usuario = '$user' and password = '$password'"; 
+    $rec = mysql_query($sql); 
+    $count = 0; 
+  
+    while($row = mysql_fetch_object($rec)) 
+    { 
+        $count++; 
+        $result = $row; 
+    } 
+  
+    if($count == 1) 
+    { 
+        return 1; 
+    } 
+  
+    else 
+    { 
+        return 0; 
+    } 
+} 
+  
+if(!isset($_SESSION['userid'])) 
+{ 
+    if(isset($_POST['login'])) 
+    { 
+        if(verificar_login($_POST['user'],$_POST['password'],$result) == 1) 
+        { 
+            $_SESSION['userid'] = $result->idusuario; 
+            header("location:index.php"); 
+        } 
+        else 
+        { 
+            echo '<div class="error">Su usuario es incorrecto, intente nuevamente.</div>'; 
+        } 
+    } 
+?> 
+           <!-- CSS PARA EL FORM LOGIN     -->
         <style type="text/css"> 
 *{ 
     font-size: 14px; 
 } 
 body{ 
-background:#aaa; 
+background-image: url("usac.jpg"); 
 } 
 form.login { 
     background: none repeat scroll 0 0 #F1F1F1; 
@@ -66,5 +105,11 @@ form.login div input[type="submit"] {
     <div><label>Password</label><input name="password" type="password"></div> 
     <div><input name="login" type="submit" value="login"></div> 
 </form> 
+<?php
+} else { 
+    echo 'Su usuario ingreso correctamente.'; 
+    echo '<a href="logout.php">Logout</a>'; 
+} 
+?>
     </body>
 </html>
